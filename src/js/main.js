@@ -207,4 +207,146 @@ window.addEventListener('DOMContentLoaded', () => {
     '.menu .container',
     'menu__item'
   ).render();
+
+  // Slider
+  const btnNext = document.querySelector('.offer__slider-next'),
+        btnPrev = document.querySelector('.offer__slider-prev'),
+        currentSlide = document.getElementById('current'),
+        totalSlides = document.getElementById('total'),
+        slide = document.querySelectorAll('.offer__slide'),
+        // Carousel vars
+        slidesWrap = document.querySelector('.offer__slider-wrapper'),
+        slidesField = document.querySelector('.offer__slider-inner'),
+        sliderWidth = window.getComputedStyle(slidesWrap).width;
+        // Dots vars
+        slider = document.querySelector('.offer__slider');
+  let slideIndex = 1;
+  let offset = 0;
+
+  function setCurrentSlide() {
+    if(slide.length < 10) {
+      currentSlide.textContent = `0${slideIndex}`;
+    } else {
+      currentSlide.textContent = slideIndex;
+    }
+  }
+
+  function setActiveDot() {
+    dots.forEach(dot => dot.style.opacity = '.5');
+    dots[slideIndex - 1].style.opacity = '1';
+  }
+
+  // showSlides(slideIndex);
+  // if (slide.length < 10) {
+  //   totalSlides.textContent = `0${slide.length}`;
+  // } else {
+  //   totalSlides.textContent = slide.length;
+  // }
+
+  // function showSlides(n) {
+  //   if(n > slide.length) {
+  //     slideIndex = 1;
+  //   }
+  //   if(n < 1) {
+  //     slideIndex = slide.length;
+  //   }
+  //   slide.forEach(item => {
+  //     item.classList.add('hide');
+  //     slide[slideIndex-1].classList.remove('hide');
+  //     slide[slideIndex-1].classList.add('show', 'fade');
+  //   });
+
+  //   if (slideIndex < 10) {
+  //     currentSlide.textContent = `0${slideIndex}`;
+  //   } else {
+  //     currentSlide.textContent = slideIndex;
+  //   }
+  // }
+  // function plusSlides(n) {
+  //   showSlides(slideIndex += n);
+  // }
+  // btnNext.addEventListener('click', () => {
+  //   plusSlides(1);
+  // });
+  // btnPrev.addEventListener('click', () => {
+  //   plusSlides(-1);
+  // });
+
+  // Carousel 
+  if (slide.length < 10) {
+    totalSlides.textContent = `0${slide.length}`;
+    currentSlide.textContent = `0${slideIndex}`;
+  } else {
+    totalSlides.textContent = slide.length;
+    currentSlide.textContent = slideIndex;
+  }
+  slidesField.style.width = 100 * slide.length + '%';
+  slidesField.style.display = 'flex';
+  slidesField.style.transition = '0.5s all';
+  slidesWrap.style.overflow = 'hidden';
+
+  slide.forEach(item => {
+    item.style.width = sliderWidth;
+  });
+
+  // Dots 
+  slider.style.position = 'relative';
+  const sliderDots = document.createElement('ol'),
+        dots = [];
+  sliderDots.classList.add('carousel-indicators');
+  slider.append(sliderDots);
+
+  for(let i = 0; i < slide.length; i++) {
+    const dot = document.createElement('li');
+    dot.classList.add('dot');
+    dot.setAttribute('data-id', i+1);
+    sliderDots.append(dot);
+    dots.push(dot);
+    if(i == 0) {
+      dot.style.opacity = '1';
+    }
+  }
+
+  btnNext.addEventListener('click', () => {
+    if(offset == +sliderWidth.slice(0, sliderWidth.length - 2) * (slide.length - 1)) {
+      offset = 0;
+    } else {
+      offset += +sliderWidth.slice(0, sliderWidth.length - 2);
+    }
+    slidesField.style.transform = `translateX(-${offset}px)`;
+    if(slideIndex == slide.length) {
+      slideIndex = 1;
+    } else {
+      slideIndex++;
+    }
+    setCurrentSlide();
+    setActiveDot();
+  });
+
+  btnPrev.addEventListener('click', () => {
+    if(offset == 0) {
+      offset = +sliderWidth.slice(0, sliderWidth.length - 2) * (slide.length - 1);
+    } else {
+      offset -= +sliderWidth.slice(0, sliderWidth.length - 2);
+    }
+    slidesField.style.transform = `translateX(-${offset}px)`;
+    if(slideIndex == 1) {
+      slideIndex = slide.length;
+    } else {
+      slideIndex--;
+    }
+    setCurrentSlide();
+    setActiveDot();
+  });
+
+  dots.forEach(dot => {
+    dot.addEventListener('click', (e) => {
+      const slideId = e.target.getAttribute('data-id');
+      slideIndex = slideId;
+      offset = +sliderWidth.slice(0, sliderWidth.length - 2) * (slideId - 1);
+      slidesField.style.transform = `translateX(-${offset}px)`;
+      setCurrentSlide();
+      setActiveDot();
+    });
+  })
 });
